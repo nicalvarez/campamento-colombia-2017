@@ -3,24 +3,24 @@ using namespace std;
 
 vector<int> suffix_array(const string &s) {
     int n = s.size();
-    vector<int> p(n), r(n);
-    vector<long long> r2(n); 
+    vector<int> sa(n), rank(n);
+    vector<long long> rank2(n); 
 
     for (int i = 0; i < n; i++) {
-        p[i] = i;
-        r[i] = s[i];
+        sa[i] = i;
+        rank[i] = s[i];
     }
     for (int len = 1; len < n; len *= 2) {
-        for (int i = 0; i < n; i++) r2[i] = ( (long long) r[i] << 32) + (i+len < n ? r[i+len] : -1);
-        sort(p.begin(), p.end(), [&](int i, int j){ 
-            return r2[i] < r2[j];
+        for (int i = 0; i < n; i++) rank2[i] = ( (long long) rank[i] << 32) + (i+len < n ? rank[i+len] : -1);
+        sort(sa.begin(), sa.end(), [&](int i, int j){ 
+            return rank2[i] < rank2[j];
         });
         for (int i = 0; i < n; i++) {
-            if (i > 0 && r2[p[i]] == r2[p[i-1]]) r[p[i]] = r[p[i-1]];
-            else r[p[i]] = i;
+            if (i > 0 && rank2[sa[i]] == rank2[sa[i-1]]) rank[sa[i]] = rank[sa[i-1]];
+            else rank[sa[i]] = i;
         }
     }
-    return p;
+    return sa;
 }
 
 vector<int> lcp_array(const vector<int> &sa, const string &s) {
@@ -34,7 +34,6 @@ vector<int> lcp_array(const vector<int> &sa, const string &s) {
         while (s[i+l] == s[j+l]) l++;
         ans[rank[i]] = l > 0 ? l-- : l;
     }
-    ans[0] = -1;
     return ans;
 }
 
